@@ -15,8 +15,10 @@ const PostsList = () => {
     <article key={post.id}>
       <h2>{post.title}</h2>
       <p>{post.content.substring(0, 100)}</p>
-      <PostAuthor userId={post.userId} />
-      <TimeAgo timeStamp={post.timeStamp} />
+      <p className="postCredit">
+        <PostAuthor userId={post.userId} />
+        <TimeAgo timeStamp={post.timeStamp} />
+      </p>
       <ReactionButtons post={post} />
     </article>
   ));
