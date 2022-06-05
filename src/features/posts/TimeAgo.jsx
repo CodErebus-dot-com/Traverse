@@ -1,7 +1,11 @@
 import { parseISO, formatDistanceToNow } from "date-fns";
 
 const TimeAgo = ({ timeStamp }) => {
-  const renderTimeStamp = <p>{formatDistanceToNow(parseISO(timeStamp))}</p>;
+  const renderTimeStamp = (
+    <span>
+      <i>{formatDistanceToNow(parseISO(timeStamp))} ago</i>
+    </span>
+  );
   return renderTimeStamp;
 };
 
