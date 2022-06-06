@@ -1,32 +1,42 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import { postsSelector } from "./selector";
-import PostAuthor from "./PostAuthor";
-import TimeAgo from "./TimeAgo";
-import ReactionButtons from "./ReactionButtons";
+import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  postsSelector,
+  postsStatusSelector,
+  postsErrorSelector,
+} from "./selector";
+import PostsExcerpt from "./PostsExcerpt";
+import { fetchPosts } from "./postsSlice";
 
 const PostsList = () => {
+  const dispatch = useDispatch();
   const posts = useSelector(postsSelector);
-  const orderedPosts = posts
-    .slice()
-    .sort((a, b) => b.timeStamp.localeCompare(a.timeStamp));
+  const status = useSelector(postsStatusSelector);
+  const error = useSelector(postsErrorSelector);
 
-  const renderPosts = orderedPosts.map((post) => (
-    <article key={post.id}>
-      <h2>{post.title}</h2>
-      <p>{post.content.substring(0, 100)}</p>
-      <p className="postCredit">
-        <PostAuthor userId={post.userId} />
-        <TimeAgo timeStamp={post.timeStamp} />
-      </p>
-      <ReactionButtons post={post} />
-    </article>
-  ));
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchPosts());
+    }
+  }, [status, dispatch]);
 
+  let content;
+  if (status === "loading") {
+    content = <p>Loading...</p>;
+  } else if (status === "succeeded") {
+    const orderedPosts = posts
+      .slice()
+      .sort((a, b) => b.date.localeCompare(a.date));
+    content = orderedPosts.map((post) => (
+      <PostsExcerpt key={post.id} post={post} />
+    ));
+  } else if (status === "failed") {
+    content = <p>{error}</p>;
+  }
   return (
     <section>
       <h2>Posts</h2>
-      {renderPosts}
+      {content}
     </section>
   );
 };
