@@ -48,7 +48,9 @@ const postsSlice = createSlice({
     reactionAdded: (state, action) => {
       const { postId, reaction } = action.payload;
       const existingPost = state.posts.find((post) => post.id === postId);
-      existingPost && existingPost.reactions[reaction]++;
+      if (existingPost) {
+        existingPost.reactions[reaction]++;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -80,6 +82,7 @@ const postsSlice = createSlice({
         state.error = action.error.message;
       })
       .addCase(addPost.fulfilled, (state, action) => {
+        action.payload.userId = Number(action.payload.userId);
         action.payload.date = new Date().toISOString();
         action.payload.reactions = {
           like: 0,
@@ -88,7 +91,7 @@ const postsSlice = createSlice({
           fire: 0,
           haha: 0,
         };
-        action.payload.userId = Number(action.payload.userId);
+        console.log(action.payload);
         state.posts.push(action.payload);
       });
   },

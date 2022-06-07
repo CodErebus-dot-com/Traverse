@@ -10,17 +10,21 @@ const AddPostForm = () => {
 
   const dispatch = useDispatch();
   const users = useSelector(usersSelector);
-  const canSubmit = [userId, title, body, addRequestStatus === "idle"].every(
-    Boolean
-  );
+  const canSubmit = [
+    userId,
+    title.length >= 3,
+    body.length >= 10,
+    addRequestStatus === "idle",
+  ].every(Boolean);
 
   const savePost = (e) => {
     if (canSubmit) {
       try {
         setAddRequestStatus("pending");
-        dispatch(addPost({ title, body, userId })).unwrap();
+        dispatch(addPost({ title, body, userId }));
         setTitle("");
         setBody("");
+        setUserId("");
       } catch (err) {
         console.log("Failed to add post", err);
       } finally {
@@ -37,7 +41,7 @@ const AddPostForm = () => {
   ));
 
   return (
-    <section>
+    <section className="formContainer">
       <h2>Add a new post</h2>
       <form onSubmit={savePost}>
         <label htmlFor="postTitle">Post Title: </label>
@@ -47,6 +51,7 @@ const AddPostForm = () => {
           name="postTitle"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          maxLength="30"
         />
         <label htmlFor="postAuthor">Author: </label>
         <select
@@ -54,7 +59,7 @@ const AddPostForm = () => {
           value={userId}
           onChange={(e) => setUserId(e.target.value)}
         >
-          <option value="" />
+          <option value="">Select author</option>
           {renderUsers}
         </select>
         <label htmlFor="postContent">Body: </label>
@@ -63,6 +68,8 @@ const AddPostForm = () => {
           name="postContent"
           value={body}
           onChange={(e) => setBody(e.target.value)}
+          rows="5"
+          maxLength="1000"
         />
         <button disabled={!canSubmit}>Save Post</button>
       </form>

@@ -5,7 +5,7 @@ const PostAuthor = ({ userId }) => {
   const users = useSelector(usersSelector);
   const author = users.find((user) => user.id === userId);
 
-  return <span>By {author ? author.name : "Anonymous"}</span>;
+  return <span>~{author ? author.name : "Anonymous"}</span>;
 };
 
 export default PostAuthor;
