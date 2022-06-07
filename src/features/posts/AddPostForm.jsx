@@ -1,19 +1,32 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { postAdded } from "./postsSlice";
+import { addPost } from "./postsSlice";
 import { usersSelector } from "../users/selector";
 const AddPostForm = () => {
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [body, setBody] = useState("");
   const [userId, setUserId] = useState("");
+  const [addRequestStatus, setAddRequestStatus] = useState("idle");
+
   const dispatch = useDispatch();
   const users = useSelector(usersSelector);
-  const canSubmit = userId && title && content;
+  const canSubmit = [userId, title, body, addRequestStatus === "idle"].every(
+    Boolean
+  );
 
   const savePost = (e) => {
-    canSubmit && dispatch(postAdded(title, content, userId));
-    setTitle("");
-    setContent("");
+    if (canSubmit) {
+      try {
+        setAddRequestStatus("pending");
+        dispatch(addPost({ title, body, userId })).unwrap();
+        setTitle("");
+        setBody("");
+      } catch (err) {
+        console.log("Failed to add post", err);
+      } finally {
+        setAddRequestStatus("idle");
+      }
+    }
     e.preventDefault();
   };
 
@@ -44,12 +57,12 @@ const AddPostForm = () => {
           <option value="" />
           {renderUsers}
         </select>
-        <label htmlFor="postContent"> Content: </label>
+        <label htmlFor="postContent">Body: </label>
         <textarea
           id="postContent"
           name="postContent"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
+          value={body}
+          onChange={(e) => setBody(e.target.value)}
         />
         <button disabled={!canSubmit}>Save Post</button>
       </form>
