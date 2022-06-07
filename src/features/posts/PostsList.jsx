@@ -22,7 +22,7 @@ const PostsList = () => {
 
   let content;
   if (status === "loading") {
-    content = <p>Loading...</p>;
+    content = <p>"Loading..."</p>;
   } else if (status === "succeeded") {
     const orderedPosts = posts
       .slice()
@@ -36,7 +36,7 @@ const PostsList = () => {
   return (
     <section>
       <h2>Posts</h2>
-      {content}
+      <div className="gridContainer">{content}</div>
     </section>
   );
 };
